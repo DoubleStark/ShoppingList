@@ -14,8 +14,9 @@ import java.util.List;
 
 import hu.bme.aut.shoppinglist.R;
 import hu.bme.aut.shoppinglist.data.ShoppingItem;
+import hu.bme.aut.shoppinglist.touch.ShoppingItemTouchHelperAdapter;
 
-public class ShoppingListRecycleAdapter extends RecyclerView.Adapter<ShoppingListRecycleAdapter.ViewHolder>
+public class ShoppingListRecycleAdapter extends RecyclerView.Adapter<ShoppingListRecycleAdapter.ViewHolder> implements ShoppingItemTouchHelperAdapter
 {
 
     private List<ShoppingItem> shoppingItemList;
@@ -79,5 +80,34 @@ public class ShoppingListRecycleAdapter extends RecyclerView.Adapter<ShoppingLis
             cbStatus = (CheckBox) itemView.findViewById(R.id.cbStatus);
             tvItem = (TextView) itemView.findViewById(R.id.tvItem);
         }
+    }
+
+    @Override
+    public void onItemDismiss(int position) {
+        shoppingItemList.remove(position);
+
+        // refreshes the whole list
+        //notifyDataSetChanged();
+        // refreshes just the relevant part that has been deleted
+        notifyItemRemoved(position);
+    }
+
+    @Override
+    public void onItemMove(int fromPosition, int toPosition) {
+        /*todoList.add(toPosition, todoList.get(fromPosition));
+        todoList.remove(fromPosition);*/
+
+        if (fromPosition < toPosition) {
+            for (int i = fromPosition; i < toPosition; i++) {
+                Collections.swap(shoppingItemList, i, i + 1);
+            }
+        } else {
+            for (int i = fromPosition; i > toPosition; i--) {
+                Collections.swap(shoppingItemList, i, i - 1);
+            }
+        }
+
+
+        notifyItemMoved(fromPosition, toPosition);
     }
 }

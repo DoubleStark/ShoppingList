@@ -8,6 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -15,6 +16,7 @@ import android.widget.EditText;
 
 import hu.bme.aut.shoppinglist.data.ShoppingItem;
 import hu.bme.aut.shoppinglist.adapter.ShoppingListRecycleAdapter;
+import hu.bme.aut.shoppinglist.touch.ShoppingItemTouchHelperCallback;
 
 
 public class MainActivity extends AppCompatActivity
@@ -49,6 +51,10 @@ public class MainActivity extends AppCompatActivity
         shoppinglistRecycleAdapter = new ShoppingListRecycleAdapter(this);
         recyclerShoppinglist.setAdapter(shoppinglistRecycleAdapter);
 
+        // adding touch support
+        ItemTouchHelper.Callback callback = new ShoppingItemTouchHelperCallback(shoppinglistRecycleAdapter);
+        ItemTouchHelper touchHelper = new ItemTouchHelper(callback);
+        touchHelper.attachToRecyclerView(recyclerShoppinglist);
     }
 
     private void setUpAddTodoUI() {
