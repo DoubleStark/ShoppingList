@@ -16,6 +16,9 @@ import hu.bme.aut.shoppinglist.R;
 import hu.bme.aut.shoppinglist.data.ShoppingItem;
 import hu.bme.aut.shoppinglist.touch.ShoppingItemTouchHelperAdapter;
 
+import io.realm.Realm;
+import io.realm.RealmResults;
+
 public class ShoppingListRecycleAdapter extends RecyclerView.Adapter<ShoppingListRecycleAdapter.ViewHolder> implements ShoppingItemTouchHelperAdapter
 {
 
@@ -23,15 +26,21 @@ public class ShoppingListRecycleAdapter extends RecyclerView.Adapter<ShoppingLis
 
     private Context context;
 
+    private Realm realmItem;
+
     public ShoppingListRecycleAdapter(Context context)
     {
         this.context = context;
 
+        realmItem = Realm.getDefaultInstance();
+        RealmResults<ShoppingItem> itemResult = realmItem.where(ShoppingItem.class).findAll();
+
         shoppingItemList = new ArrayList<ShoppingItem>();
 
-        for (int i = 0; i < 20; i++)
+        for (int i = 0; i < itemResult.size(); i++)
         {
-            shoppingItemList.add(new ShoppingItem("Shopping Item "+i, false));
+            shoppingItemList.add(itemResult.get(i));
+
         }
     }
 
@@ -48,10 +57,14 @@ public class ShoppingListRecycleAdapter extends RecyclerView.Adapter<ShoppingLis
         holder.tvItem.setText(shoppingItemList.get(position).getName());
         holder.cbStatus.setChecked(shoppingItemList.get(position).getStatus());
 
-        holder.cbStatus.setOnClickListener(new View.OnClickListener() {
+        holder.cbStatus.setOnClickListener(new View.OnClickListener()
+        {
             @Override
-            public void onClick(View v) {
+            public void onClick(View v)
+            {
+                realmItem.beginTransaction();
                 shoppingItemList.get(holder.getAdapterPosition()).setStatus(holder.cbStatus.isChecked());
+                realmItem.commitTransaction();
             }
         });
     }
@@ -68,6 +81,17 @@ public class ShoppingListRecycleAdapter extends RecyclerView.Adapter<ShoppingLis
         notifyItemInserted(0);
     }
 
+    public void addShoppingItem(String itemName) {
+        realmItem.beginTransaction();
+        ShoppingItem newShoppingItem = realmItem.createObject(ShoppingItem.class);
+        newShoppingItem.setName(itemName);
+        newShoppingItem.setStatus(false);
+        realmItem.commitTransaction();
+
+        shoppingItemList.add(0, newShoppingItem);
+
+        notifyItemInserted(0);
+    }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
@@ -83,7 +107,13 @@ public class ShoppingListRecycleAdapter extends RecyclerView.Adapter<ShoppingLis
     }
 
     @Override
-    public void onItemDismiss(int position) {
+    public void onItemDismiss(int position)
+    {
+        realmItem.beginTransaction();
+        shoppingItemList.get(position).deleteFromRealm();
+        realmItem.commitTransaction();
+
+
         shoppingItemList.remove(position);
 
         // refreshes the whole list
@@ -110,4 +140,10 @@ public class ShoppingListRecycleAdapter extends RecyclerView.Adapter<ShoppingLis
 
         notifyItemMoved(fromPosition, toPosition);
     }
+
+    public void closeRealm()
+    {
+        realmItem.close();
+    }
+
 }

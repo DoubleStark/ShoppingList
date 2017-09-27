@@ -14,7 +14,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 
-import hu.bme.aut.shoppinglist.data.ShoppingItem;
 import hu.bme.aut.shoppinglist.adapter.ShoppingListRecycleAdapter;
 import hu.bme.aut.shoppinglist.touch.ShoppingItemTouchHelperCallback;
 
@@ -54,7 +53,7 @@ public class MainActivity extends AppCompatActivity
         // adding touch support
         ItemTouchHelper.Callback callback = new ShoppingItemTouchHelperCallback(shoppinglistRecycleAdapter);
         ItemTouchHelper touchHelper = new ItemTouchHelper(callback);
-        touchHelper.attachToRecyclerView(recyclerShoppinglist);
+        touchHelper.attachToRecyclerView(recyclerShoppinglist );
     }
 
     private void setUpAddTodoUI() {
@@ -77,16 +76,16 @@ public class MainActivity extends AppCompatActivity
 
     public void showAddTodoDialog() {
         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("New Todo");
+        builder.setTitle("New Shopping Item");
 
-        final EditText etTodoText = new EditText(this);
-        builder.setView(etTodoText);
+        final EditText etShoppingItemText = new EditText(this);
+        builder.setView(etShoppingItemText);
 
         builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                shoppinglistRecycleAdapter.addShoppingItem(new ShoppingItem(etTodoText.getText().toString(), false));
-
+                //shoppinglistRecycleAdapter.addShoppingItem(new ShoppingItem(etTodoText.getText().toString(), false));
+                shoppinglistRecycleAdapter.addShoppingItem(etShoppingItemText.getText().toString());
                 recyclerShoppinglist.scrollToPosition(0);
             }
         });
@@ -122,4 +121,12 @@ public class MainActivity extends AppCompatActivity
 
         return super.onOptionsItemSelected(item);
     }
+
+    @Override
+    public void onDestroy()
+    {
+        super.onDestroy();
+        shoppinglistRecycleAdapter.closeRealm();
+    }
+
 }
