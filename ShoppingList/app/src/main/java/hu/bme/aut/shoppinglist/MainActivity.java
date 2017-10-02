@@ -27,7 +27,9 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-       
+
+        ((MainApplication)getApplication()).openRealm();
+
         setupUI();
     }
 
@@ -45,7 +47,7 @@ public class MainActivity extends AppCompatActivity
         final LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         recyclerShoppinglist.setLayoutManager(layoutManager);
 
-        shoppinglistRecycleAdapter = new ShoppingListRecycleAdapter(this);
+        shoppinglistRecycleAdapter = new ShoppingListRecycleAdapter(this, ((MainApplication)getApplication()).getRealmItem());
         recyclerShoppinglist.setAdapter(shoppinglistRecycleAdapter);
 
         // adding touch support
@@ -124,7 +126,7 @@ public class MainActivity extends AppCompatActivity
     public void onDestroy()
     {
         super.onDestroy();
-        shoppinglistRecycleAdapter.closeRealm();
+        ((MainApplication)getApplication()).closeRealm();
     }
 
 }

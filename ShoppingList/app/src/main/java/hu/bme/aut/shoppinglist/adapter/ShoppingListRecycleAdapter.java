@@ -18,6 +18,7 @@ import hu.bme.aut.shoppinglist.touch.ShoppingItemTouchHelperAdapter;
 
 import io.realm.Realm;
 import io.realm.RealmResults;
+import io.realm.Sort;
 
 public class ShoppingListRecycleAdapter extends RecyclerView.Adapter<ShoppingListRecycleAdapter.ViewHolder> implements ShoppingItemTouchHelperAdapter
 {
@@ -28,12 +29,12 @@ public class ShoppingListRecycleAdapter extends RecyclerView.Adapter<ShoppingLis
 
     private Realm realmItem;
 
-    public ShoppingListRecycleAdapter(Context context)
+    public ShoppingListRecycleAdapter(Context context, Realm realmItem)
     {
         this.context = context;
+        this.realmItem = realmItem;
 
-        realmItem = Realm.getDefaultInstance();
-        RealmResults<ShoppingItem> itemResult = realmItem.where(ShoppingItem.class).findAll();
+        RealmResults<ShoppingItem> itemResult = realmItem.where(ShoppingItem.class).findAll().sort("name", Sort.ASCENDING);
 
         shoppingItemList = new ArrayList<ShoppingItem>();
 
@@ -140,10 +141,4 @@ public class ShoppingListRecycleAdapter extends RecyclerView.Adapter<ShoppingLis
 
         notifyItemMoved(fromPosition, toPosition);
     }
-
-    public void closeRealm()
-    {
-        realmItem.close();
-    }
-
 }
