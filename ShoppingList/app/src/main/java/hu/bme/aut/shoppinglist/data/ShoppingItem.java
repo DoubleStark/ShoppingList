@@ -1,6 +1,7 @@
 package hu.bme.aut.shoppinglist.data;
 
 import io.realm.RealmObject ;
+import io.realm.annotations.PrimaryKey;
 
 public class ShoppingItem extends RealmObject
 {
@@ -8,6 +9,10 @@ public class ShoppingItem extends RealmObject
     private boolean status;
     private String description;
     private int price;
+
+    @PrimaryKey
+    private String itemID;
+
 
     public ShoppingItem()
     {}
@@ -37,6 +42,11 @@ public class ShoppingItem extends RealmObject
     public String getName()
     {
         return name;
+    }
+
+    public String getItemID()
+    {
+        return itemID;
     }
 
 }

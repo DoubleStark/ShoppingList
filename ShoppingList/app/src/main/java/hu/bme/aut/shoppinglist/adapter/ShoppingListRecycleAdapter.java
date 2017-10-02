@@ -11,7 +11,9 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 
+import hu.bme.aut.shoppinglist.MainActivity;
 import hu.bme.aut.shoppinglist.R;
 import hu.bme.aut.shoppinglist.data.ShoppingItem;
 import hu.bme.aut.shoppinglist.touch.ShoppingItemTouchHelperAdapter;
@@ -68,6 +70,17 @@ public class ShoppingListRecycleAdapter extends RecyclerView.Adapter<ShoppingLis
                 realmItem.commitTransaction();
             }
         });
+
+        holder.itemView.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                ((MainActivity)context).openEditActivity(holder.getAdapterPosition(),
+                        shoppingItemList.get(holder.getAdapterPosition()).getItemID()
+                );
+            }
+        });
     }
 
     @Override
@@ -84,7 +97,7 @@ public class ShoppingListRecycleAdapter extends RecyclerView.Adapter<ShoppingLis
 
     public void addShoppingItem(String itemName) {
         realmItem.beginTransaction();
-        ShoppingItem newShoppingItem = realmItem.createObject(ShoppingItem.class);
+        ShoppingItem newShoppingItem = realmItem.createObject(ShoppingItem.class, UUID.randomUUID().toString());
         newShoppingItem.setName(itemName);
         newShoppingItem.setStatus(false);
         realmItem.commitTransaction();
@@ -92,6 +105,17 @@ public class ShoppingListRecycleAdapter extends RecyclerView.Adapter<ShoppingLis
         shoppingItemList.add(0, newShoppingItem);
 
         notifyItemInserted(0);
+    }
+
+    public void updateShoppingItem(String itemID, int positionToEdit)
+    {
+        ShoppingItem item = realmItem.where(ShoppingItem.class)
+                .equalTo("itemID", itemID)
+                .findFirst();
+
+        shoppingItemList.set(positionToEdit, item);
+
+        notifyItemChanged(positionToEdit);
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {

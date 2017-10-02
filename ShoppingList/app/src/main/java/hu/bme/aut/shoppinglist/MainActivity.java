@@ -1,6 +1,7 @@
 package hu.bme.aut.shoppinglist;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
@@ -13,6 +14,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import hu.bme.aut.shoppinglist.adapter.ShoppingListRecycleAdapter;
 import hu.bme.aut.shoppinglist.touch.ShoppingItemTouchHelperCallback;
@@ -20,8 +22,13 @@ import hu.bme.aut.shoppinglist.touch.ShoppingItemTouchHelperCallback;
 
 public class MainActivity extends AppCompatActivity
 {
+    public static final String KEY_SHOPPINGITEM_ID = "KEY_SHOPPINGITEM_ID";
+    public static final int REQUEST_CODE_EDIT = 101;
+
     private ShoppingListRecycleAdapter shoppinglistRecycleAdapter;
     private RecyclerView recyclerShoppinglist;
+
+    private int positionToEdit = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,7 +43,7 @@ public class MainActivity extends AppCompatActivity
     private void setupUI()
     {
         setUpToolBar();
-        setUpAddTodoUI();
+        setUpAddShoppingItemUI();
         setUpRecyclerView();
     }
 
@@ -56,7 +63,7 @@ public class MainActivity extends AppCompatActivity
         touchHelper.attachToRecyclerView(recyclerShoppinglist );
     }
 
-    private void setUpAddTodoUI() {
+    private void setUpAddShoppingItemUI() {
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -64,7 +71,7 @@ public class MainActivity extends AppCompatActivity
                 //Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                 //        .setAction("Action", null).show();
 
-                showAddTodoDialog();
+                showAddShoppingItemDialog();
             }
         });
     }
@@ -74,7 +81,7 @@ public class MainActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
     }
 
-    public void showAddTodoDialog() {
+    public void showAddShoppingItemDialog() {
         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("New Shopping Item");
 
@@ -90,7 +97,8 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener()
+        {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
@@ -98,6 +106,37 @@ public class MainActivity extends AppCompatActivity
         });
 
         builder.show();
+    }
+
+    public void openEditActivity(int index, String itemID)
+    {
+        positionToEdit = index;
+
+        Intent startEdit = new Intent(this, EditItemActivity.class);
+
+        startEdit.putExtra(KEY_SHOPPINGITEM_ID, itemID);
+
+        startActivityForResult(startEdit, REQUEST_CODE_EDIT);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data)
+    {
+        switch (resultCode)
+        {
+            case RESULT_OK:
+                if (requestCode == REQUEST_CODE_EDIT)
+                {
+                    String todoID  = data.getStringExtra(
+                            EditItemActivity.KEY_SHOPPINGITEM);
+
+                    shoppinglistRecycleAdapter.updateShoppingItem(todoID, positionToEdit);
+                }
+                break;
+            case RESULT_CANCELED:
+                Toast.makeText(MainActivity.this, "Cancelled", Toast.LENGTH_SHORT).show();
+                break;
+        }
     }
 
     @Override
