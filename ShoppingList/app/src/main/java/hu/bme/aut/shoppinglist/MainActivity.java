@@ -88,7 +88,7 @@ public class MainActivity extends AppCompatActivity
         final EditText etShoppingItemText = new EditText(this);
         builder.setView(etShoppingItemText);
 
-        builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+        builder.setPositiveButton("Add", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 //shoppinglistRecycleAdapter.addShoppingItem(new ShoppingItem(etTodoText.getText().toString(), false));
@@ -127,10 +127,10 @@ public class MainActivity extends AppCompatActivity
             case RESULT_OK:
                 if (requestCode == REQUEST_CODE_EDIT)
                 {
-                    String todoID  = data.getStringExtra(
+                    String itemID  = data.getStringExtra(
                             EditItemActivity.KEY_SHOPPINGITEM);
 
-                    shoppinglistRecycleAdapter.updateShoppingItem(todoID, positionToEdit);
+                    shoppinglistRecycleAdapter.updateShoppingItem(itemID, positionToEdit);
                 }
                 break;
             case RESULT_CANCELED:
@@ -147,18 +147,27 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        switch (id)
+        {
+            case R.id.night_mode:
+            {
+                Toast.makeText(this, "Night mode", Toast.LENGTH_SHORT).show();
+                break;
+            }
+            case R.id.delete_all:
+            {
+                Toast.makeText(this, "Delete list", Toast.LENGTH_LONG).show();
+                break;
+            }
         }
-
-        return super.onOptionsItemSelected(item);
+        return true;
     }
 
     @Override
