@@ -6,7 +6,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -56,9 +59,58 @@ public class ShoppingListRecycleAdapter extends RecyclerView.Adapter<ShoppingLis
     }
 
     @Override
-    public void onBindViewHolder(final ViewHolder holder, int position) {
+    public void onBindViewHolder(final ViewHolder holder, int position)
+    {
         holder.tvItem.setText(shoppingItemList.get(position).getName());
         holder.cbStatus.setChecked(shoppingItemList.get(position).getStatus());
+        holder.tvDescription.setText(shoppingItemList.get(position).getDescription());
+        holder.tvAmount.setText(String.valueOf(shoppingItemList.get(position).getAmount()));
+        holder.tvPrice.setText(String.valueOf(shoppingItemList.get(position).getPrice()) +" HUF");
+
+        switch (shoppingItemList.get(position).getCategory())
+        {
+            case "Food":
+            {
+                holder.ivCategoryImage.setImageResource(R.drawable.ic_room_service_black_24dp);
+                break;
+            }
+            case "Technology":
+            {
+                holder.ivCategoryImage.setImageResource(R.drawable.ic_devices_other_black_24dp);
+                break;
+            }
+            case "Furniture":
+            {
+                holder.ivCategoryImage.setImageResource(R.drawable.ic_weekend_24dp);
+                break;
+            }
+            case "Clothes":
+            {
+                holder.ivCategoryImage.setImageResource(R.drawable.ic_local_offer_24dp);
+                break;
+            }
+            case "Accessories":
+            {
+                holder.ivCategoryImage.setImageResource(R.drawable.ic_toys_24dp);
+                break;
+            }
+            case "Personal care":
+            {
+                holder.ivCategoryImage.setImageResource(R.drawable.ic_face_24dp);
+                break;
+            }
+            case "Beverages":
+            {
+                holder.ivCategoryImage.setImageResource(R.drawable.ic_local_drink_24dp);
+                break;
+            }
+            case "Other":
+            {
+                holder.ivCategoryImage.setImageResource(R.drawable.ic_help_black_24dp);
+                break;
+            }
+
+        }
 
         holder.cbStatus.setOnClickListener(new View.OnClickListener()
         {
@@ -89,17 +141,17 @@ public class ShoppingListRecycleAdapter extends RecyclerView.Adapter<ShoppingLis
         return shoppingItemList.size();
     }
 
-    public void addShoppingItem(ShoppingItem item)
+    public void addShoppingItem(String itemName, String itemCategory, int itemCategoryId, int itemPrice, int itemAmount, String itemDescription)
     {
-        shoppingItemList.add(0, item);
-        notifyItemInserted(0);
-    }
-
-    public void addShoppingItem(String itemName) {
         realmItem.beginTransaction();
         ShoppingItem newShoppingItem = realmItem.createObject(ShoppingItem.class, UUID.randomUUID().toString());
         newShoppingItem.setName(itemName);
+        newShoppingItem.setCategory(itemCategory);
+        newShoppingItem.setPrice(itemPrice);
+        newShoppingItem.setDescription(itemDescription);
         newShoppingItem.setStatus(false);
+        newShoppingItem.setCategoryID(itemCategoryId);
+        newShoppingItem.setAmount(itemAmount);
         realmItem.commitTransaction();
 
         shoppingItemList.add(0, newShoppingItem);
@@ -118,17 +170,70 @@ public class ShoppingListRecycleAdapter extends RecyclerView.Adapter<ShoppingLis
         notifyItemChanged(positionToEdit);
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    public static class ViewHolder extends RecyclerView.ViewHolder
+    {
 
         private CheckBox cbStatus;
         private TextView tvItem;
+        private ImageView ivCategoryImage;
+        private TextView tvPrice;
+        private TextView tvAmount;
+        private TextView tvDescription;
 
-        public ViewHolder(View itemView) {
+
+
+        public ViewHolder(View itemView)
+        {
             super(itemView);
 
             cbStatus = (CheckBox) itemView.findViewById(R.id.cbStatus);
+            ivCategoryImage = (ImageView) itemView.findViewById(R.id.ivCategoryImage);
             tvItem = (TextView) itemView.findViewById(R.id.tvItem);
+            tvPrice = (TextView) itemView.findViewById(R.id.tvPrice);
+            tvAmount = (TextView) itemView.findViewById(R.id.tvAmount);
+            tvDescription = (TextView) itemView.findViewById(R.id.tvDescription);
+
         }
+    }
+
+    public void deleteShoppingList()
+    {
+        while(shoppingItemList.size() != 0)
+        {
+
+            realmItem.beginTransaction();
+            shoppingItemList.get(0).deleteFromRealm();
+            realmItem.commitTransaction();
+
+            shoppingItemList.remove(0);
+        }
+
+        /*
+        for(int i=0; i < shoppingItemList.size(); )
+        {
+            realmItem.beginTransaction();
+            shoppingItemList.get(i).deleteFromRealm();
+            realmItem.commitTransaction();
+
+            shoppingItemList.remove(i);
+        }
+        */
+        notifyDataSetChanged();
+    }
+
+    public int totalCost()
+    {
+        int cost=0;
+
+        for(int i=0; i < shoppingItemList.size(); i++)
+        {
+            if(shoppingItemList.get(i).getStatus() != true)
+            {
+                cost = cost + shoppingItemList.get(i).getCost();
+            }
+        }
+
+        return cost;
     }
 
     @Override
@@ -162,7 +267,7 @@ public class ShoppingListRecycleAdapter extends RecyclerView.Adapter<ShoppingLis
             }
         }
 
-
         notifyItemMoved(fromPosition, toPosition);
     }
+
 }

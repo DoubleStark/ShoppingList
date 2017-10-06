@@ -1,4 +1,14 @@
 <resources>
-    <string name="app_name">Shopping List</string>
-    <string name="action_settings">Settings</string>
+    <string name="app_name">Simple Shopping</string>
+    <string name="title_activity_add_item">AddItemActivity</string>
+    <string-array name="category_array">
+        <item>Food</item>
+        <item>Technology</item>
+        <item>Furniture</item>
+        <item>Clothes</item>
+        <item>Accessories</item>
+        <item>Personal care</item>
+        <item>Beverages</item>
+        <item>Other</item>
+    </string-array>
 </resources>

@@ -13,7 +13,12 @@ import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import hu.bme.aut.shoppinglist.adapter.ShoppingListRecycleAdapter;
@@ -30,10 +35,13 @@ public class MainActivity extends AppCompatActivity
 
     private int positionToEdit = -1;
 
+
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
 
         ((MainApplication)getApplication()).openRealm();
 
@@ -42,6 +50,7 @@ public class MainActivity extends AppCompatActivity
 
     private void setupUI()
     {
+
         setUpToolBar();
         setUpAddShoppingItemUI();
         setUpRecyclerView();
@@ -68,8 +77,6 @@ public class MainActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                //        .setAction("Action", null).show();
 
                 showAddShoppingItemDialog();
             }
@@ -85,22 +92,95 @@ public class MainActivity extends AppCompatActivity
         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("New Shopping Item");
 
-        final EditText etShoppingItemText = new EditText(this);
-        builder.setView(etShoppingItemText);
+        LinearLayout layout = new LinearLayout(this);
+        layout.setOrientation(LinearLayout.VERTICAL);
 
-        builder.setPositiveButton("Add", new DialogInterface.OnClickListener() {
+        final EditText etShoppingItemText = new EditText(this);
+        etShoppingItemText.setHint("Item name");
+        layout.addView(etShoppingItemText);
+
+        final String[] categorySelected = new String[1];
+        final int[] categoryID = new int[1];
+        final Spinner categorySpinner = new Spinner(this);
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.category_array, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        categorySpinner.setAdapter(adapter);
+
+        categorySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
+        {
             @Override
-            public void onClick(DialogInterface dialog, int which) {
-                //shoppinglistRecycleAdapter.addShoppingItem(new ShoppingItem(etTodoText.getText().toString(), false));
-                shoppinglistRecycleAdapter.addShoppingItem(etShoppingItemText.getText().toString());
-                recyclerShoppinglist.scrollToPosition(0);
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l)
+            {
+                categorySelected[0] = (String)adapterView.getItemAtPosition(i);
+                categoryID[0] = (int)(long)adapterView.getItemIdAtPosition(i) ;
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView)
+            {
+
+            }
+        });
+
+        layout.addView(categorySpinner);
+
+        final EditText etShoppingItemPrice = new EditText(this);
+        etShoppingItemPrice.setHint("Estimated price");
+        layout.addView(etShoppingItemPrice);
+
+        final EditText etShoppingItemAmount = new EditText(this);
+        etShoppingItemAmount.setHint("Amount required");
+        layout.addView(etShoppingItemAmount);
+
+        final EditText etShoppingItemDescription = new EditText(this);
+        etShoppingItemDescription.setHint("Item description");
+        layout.addView(etShoppingItemDescription);
+
+
+        builder.setView(layout) ;
+
+
+
+        builder.setPositiveButton("Add", new DialogInterface.OnClickListener()
+        {
+            @Override
+            public void onClick(DialogInterface dialog, int which)
+            {
+                String name = etShoppingItemText.getText().toString();
+                String description = etShoppingItemDescription.getText().toString();
+
+                if("".equals(name))
+                {
+                    etShoppingItemText.setError("Can not be empty");
+                    Toast.makeText(MainActivity.this, "Item name cannot be empty", Toast.LENGTH_LONG).show();
+                }
+                else
+                {
+                    try
+                    {
+                        int price = Integer.parseInt(etShoppingItemPrice.getText().toString());
+                        int amount = Integer.parseInt(etShoppingItemAmount.getText().toString()) ;
+
+                        shoppinglistRecycleAdapter.addShoppingItem(name, categorySelected[0], categoryID[0], price, amount, description);
+                        recyclerShoppinglist.scrollToPosition(0);
+
+                        Toast.makeText(MainActivity.this, "Item added", Toast.LENGTH_LONG).show();
+                    }
+                    catch(NumberFormatException e)
+                    {
+                        e.printStackTrace();
+                        Toast.makeText(MainActivity.this, "Enter an integer value for the price/amount", Toast.LENGTH_LONG).show();
+                    }
+                }
             }
         });
 
         builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener()
         {
             @Override
-            public void onClick(DialogInterface dialog, int which) {
+            public void onClick(DialogInterface dialog, int which)
+            {
+                Toast.makeText(MainActivity.this, "Cancelled", Toast.LENGTH_LONG).show();
                 dialog.dismiss();
             }
         });
@@ -156,15 +236,15 @@ public class MainActivity extends AppCompatActivity
 
         switch (id)
         {
-            case R.id.night_mode:
-            {
-                Toast.makeText(this, "Night mode", Toast.LENGTH_SHORT).show();
-                break;
-            }
             case R.id.delete_all:
             {
-                Toast.makeText(this, "Delete list", Toast.LENGTH_LONG).show();
+                shoppinglistRecycleAdapter.deleteShoppingList();
+                Toast.makeText(this, "List deleted", Toast.LENGTH_LONG).show();
                 break;
+            }
+            case R.id.total_cost:
+            {
+                Toast.makeText(MainActivity.this, "Estimated cost: " + String.valueOf(shoppinglistRecycleAdapter.totalCost()) + " HUF", Toast.LENGTH_LONG).show();
             }
         }
         return true;

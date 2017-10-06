@@ -13,20 +13,55 @@
         android:id="@+id/etShoppingItemText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="shopping item title" />
+        android:paddingBottom="16dp"
+        android:paddingTop="16dp"
+        android:hint="Item name" />
+
+    <Spinner
+        android:id="@+id/spinner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="16dp"
+        android:paddingTop="16dp"/>
+
+    <EditText
+        android:id="@+id/etShoppingItemPrice"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="16dp"
+        android:paddingTop="16dp"
+        android:hint="Estimated price"/>
+
+    <EditText
+        android:id="@+id/etShoppingItemAmount"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="16dp"
+        android:paddingTop="16dp"
+        android:hint="Amount required"/>
+
+    <EditText
+        android:id="@+id/etShoppingItemDescription"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="16dp"
+        android:paddingTop="16dp"
+        android:hint="Item description"/>
 
     <CheckBox
         android:id="@+id/cbShoppingItemStatus"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Done" />
-
+        android:paddingBottom="16dp"
+        android:paddingTop="16dp"
+        android:text="Bought" />
 
     <Button
         android:id="@+id/btnSave"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:paddingBottom="16dp"
+        android:paddingTop="16dp"
         android:text="Save" />
-
 </LinearLayout>
 

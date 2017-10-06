@@ -2,17 +2,17 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="hu.bme.aut.shoppinglist.MainActivity">
-    <item
-        android:id="@+id/night_mode"
-        android:icon="@drawable/ic_brightness_3_black_24dp"
-        android:title="Nightmode"
-        android:iconTint="@color/colorWhite"
-        app:showAsAction="always|withText"/>
+
     <item
         android:id="@+id/delete_all"
         android:icon="@android:drawable/ic_menu_delete"
-        android:iconTint="@color/colorWhite"
         android:title="DeleteAll"
+        app:showAsAction="always|withText"/>
+
+    <item
+        android:id="@+id/total_cost"
+        android:icon="@drawable/ic_payment_24dp"
+        android:title="TotalCost"
         app:showAsAction="always|withText"/>
 
 </menu>

@@ -12,6 +12,8 @@ public class SplashActivity extends Activity
 {
     private TextView tv;
     private ImageView iv;
+    private TextView tvName;
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -19,9 +21,11 @@ public class SplashActivity extends Activity
         setContentView(R.layout.activity_splash);
         tv = (TextView) findViewById(R.id.tv);
         iv = (ImageView) findViewById(R.id.iv) ;
+        tvName = (TextView) findViewById(R.id.tvMyName);
         Animation myanim = AnimationUtils.loadAnimation(this, R.anim.mytransition);
         tv.startAnimation(myanim);
         iv.startAnimation(myanim);
+        tvName.startAnimation(myanim);
 
         final Intent intent = new Intent(this, MainActivity.class) ;
 
